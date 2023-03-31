@@ -5,13 +5,13 @@ import {
 } from '../utils'
 import { StackOptions } from './stacks'
 
-interface VariablesInterface {
+export interface Variables {
   [key: string]: string | number | boolean
 }
 
 export type AddStackVariablesType = (
   url: string,
-  variables: VariablesInterface,
+  variables: Variables,
   removeSafeUrlFromQuery?: boolean,
 ) => string
 
@@ -32,7 +32,7 @@ export interface GetUrlFromUrlOptions {
   stackoptions?: StackOptions
   filename?: string
   format?: string
-  variables?: VariablesInterface
+  variables?: Variables
   removeSafeUrlFromQuery?: boolean
   clearVariables?: boolean
 }
@@ -40,12 +40,12 @@ export interface GetUrlFromUrlOptions {
 export interface GetUrlOptions {
   filename?: string
   stackoptions?: StackOptions
-  variables?: VariablesInterface
+  variables?: Variables
   removeSafeUrlFromQuery?: boolean
 }
 
 interface StackComponents {
-  variables: VariablesInterface
+  variables: Variables
   stackString: string
 }
 
@@ -57,7 +57,7 @@ const getStackComponents = (stack: string): StackComponents => {
   // but we don't parse operations yet, here.
 
   const slashSplits = stack.split('/')
-  const variables: VariablesInterface = {}
+  const variables: Variables = {}
 
   for (let i = 0; i < slashSplits.length; i++) {
     const slashSplit = slashSplits[i]
@@ -133,12 +133,11 @@ export const getStackVariables = (
   urlComponents: UrlComponents,
   urlObject: URL,
   stackComponents: StackComponents,
-  variables: VariablesInterface,
+  variables: Variables,
 ) => {
   const variablesFromPath = stackComponents.variables
   const vQuery = urlObject.searchParams.get('v')
-  const vQueryParsed: VariablesInterface =
-    vQuery !== null ? JSON.parse(vQuery) : {}
+  const vQueryParsed: Variables = vQuery !== null ? JSON.parse(vQuery) : {}
 
   return Object.assign(variablesFromPath, vQueryParsed, variables)
 }
@@ -193,7 +192,7 @@ export const getUrl = (
  *
  * @param  {string}                      rokkaUrl    rokka render URL
  * @param  {string|array}                stack       stack name or an array of stack operation objects
- * @param  {{filename:string|undefined, stackoptions: StackOptions|undefined, format: string|undefined, variables: VariablesInterface|undefined, clearVariables:boolean|undefined, removeSafeUrlFromQuery: boolean|undefined}} options     Optional. filename: Adds or changes the filename to the URL, stackoptions: Adds stackoptions to the URL, format: Changes the format
+ * @param  {{filename:string|undefined, stackoptions: StackOptions|undefined, format: string|undefined, variables: Variables|undefined, clearVariables:boolean|undefined, removeSafeUrlFromQuery: boolean|undefined}} options     Optional. filename: Adds or changes the filename to the URL, stackoptions: Adds stackoptions to the URL, format: Changes the format
  * @return {string}
  */
 export const getUrlFromUrl = (
@@ -281,7 +280,7 @@ export const addStackVariables: AddStackVariablesType = (
 
   // put variables into url string or v parameter, depending on characters in it
   if (Object.keys(returnVariables).length > 0) {
-    const jsonVariables: VariablesInterface = {}
+    const jsonVariables: Variables = {}
     let urlVariables = ''
     for (const name in returnVariables) {
       const value = returnVariables[name]
