@@ -289,7 +289,7 @@ export const addStackVariables: AddStackVariablesType = (
         // if there's a special var in the value, put it into the v query parameter
         if (
           valueAsString.length > 20 ||
-          valueAsString.match(/[$/\\\-#%&?; ]/)
+          valueAsString.match(/[*$/\\\-#%&?; :]/)
         ) {
           jsonVariables[name] = stringifyBool(value)
         } else {
