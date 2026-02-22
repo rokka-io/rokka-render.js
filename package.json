@@ -18,6 +18,7 @@
     "lint": "eslint '{src,tests,docs}/**/*.{js,ts}'",
     "lint:fix": "eslint '{src,tests,docs}/**/*.{js,ts}'  --fix",
     "jest": "jest",
+    "docs": "node ./docs/generate.mjs",
     "compile": "rm -rf ./dist && rollup -c rollup.config.mjs",
     "watch": "rollup -c rollup.config.mjs -w"
   },
@@ -38,8 +39,6 @@
   },
   "homepage": "https://github.com/rokka-io/rokka-render.js#readme",
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -56,6 +55,8 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.4.6",
     "tslib": "^2.8.1",
+    "typedoc": "^0.28.17",
+    "typedoc-plugin-markdown": "^4.10.0",
     "typescript": "^5.9.3"
   }
 }

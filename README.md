@@ -36,6 +36,10 @@ const urlWithVars = addStackVariables(
 // => 'https://myorg.rokka.io/stack/v-width-300-quality-high/abc123.jpg'
 ```
 
+<!-- DOCS -->
+
+See [full API documentation](docs/api/) for detailed reference.
+
 ## API Reference
 
 ### getUrl(organization, hash, format, stack, options?, renderHost?)
@@ -44,14 +48,14 @@ Generate a rokka render URL from individual components.
 
 **Parameters:**
 
-| Name           | Type                         | Description                                                          |
-| -------------- | ---------------------------- | -------------------------------------------------------------------- |
-| `organization` | `string`                     | The rokka organization name                                          |
-| `hash`         | `string`                     | The image hash (6-40 hex characters)                                 |
-| `format`       | `string`                     | Output format (`'jpg'`, `'png'`, `'webp'`, etc.)                     |
-| `stack`        | `string \| StackOperation[]` | Stack name or array of operations                                    |
-| `options`      | `GetUrlOptions`              | Optional settings (see below)                                        |
-| `renderHost`   | `string`                     | Custom render host. Default: `'https://{organization}.rokka.io'`     |
+| Name           | Type                         | Description                                                               |
+| -------------- | ---------------------------- | ------------------------------------------------------------------------- |
+| `organization` | `string`                     | The rokka organization name                                               |
+| `hash`         | `string`                     | The image hash (6-40 hex characters) or source path                       |
+| `format`       | `string`                     | The output format (e.g., 'jpg', 'png', 'webp')                            |
+| `stack`        | `string \| StackOperation[]` | Stack name (string) or array of StackOperation objects for dynamic stacks |
+| `options`      | `GetUrlOptions`              | Optional settings for filename, stack options, and variables              |
+| `renderHost`   | `string`                     | Custom render host. Default: `https://{organization}.rokka.io`            |
 
 **Returns:** `string` - The complete rokka render URL
 
@@ -61,23 +65,24 @@ Generate a rokka render URL from individual components.
 // Using a named stack
 getUrl('myorg', 'abc123', 'jpg', 'thumbnail')
 // => 'https://myorg.rokka.io/thumbnail/abc123.jpg'
+```
 
+```js
 // Using dynamic operations
 getUrl('myorg', 'abc123', 'png', [
   { name: 'resize', options: { width: 300 } },
   { name: 'crop', options: { width: 200, height: 200 } }
 ])
 // => 'https://myorg.rokka.io/dynamic/resize-width-300--crop-width-200-height-200/abc123.png'
+```
 
-// With filename (for SEO-friendly URLs)
-getUrl('myorg', 'abc123', 'jpg', 'gallery', { filename: 'my-photo' })
-// => 'https://myorg.rokka.io/gallery/abc123/my-photo.jpg'
-
-// With stack options and variables
-getUrl('myorg', 'abc123', 'jpg', 'responsive', {
-  stackoptions: { af: 1 },
-  variables: { width: 800 }
+```js
+// With filename and variables
+getUrl('myorg', 'abc123', 'jpg', 'gallery', {
+  filename: 'my-image',
+  variables: { size: 'large' }
 })
+// => 'https://myorg.rokka.io/gallery/v-size-large/abc123/my-image.jpg'
 ```
 
 ---
@@ -86,24 +91,31 @@ getUrl('myorg', 'abc123', 'jpg', 'responsive', {
 
 Transform an existing rokka render URL with a new stack and options.
 
+Extracts the organization, hash, and other components from the input URL, then generates a new URL with the specified stack and options.
+
 **Parameters:**
 
-| Name         | Type                         | Description                                                      |
-| ------------ | ---------------------------- | ---------------------------------------------------------------- |
-| `rokkaUrl`   | `string`                     | An existing rokka render URL                                     |
-| `stack`      | `string \| StackOperation[]` | Stack name or array of operations                                |
-| `options`    | `GetUrlFromUrlOptions`       | Optional settings (see below)                                    |
-| `renderHost` | `string`                     | Custom render host. Default: `'https://{organization}.rokka.io'` |
+| Name         | Type                         | Description                                                    |
+| ------------ | ---------------------------- | -------------------------------------------------------------- |
+| `rokkaUrl`   | `string`                     | An existing rokka render URL                                   |
+| `stack`      | `string \| StackOperation[]` | Stack name (string) or array of StackOperation objects         |
+| `options`    | `GetUrlFromUrlOptions`       | Optional settings to modify the URL Default: `{}`              |
+| `renderHost` | `string`                     | Custom render host. Default: `https://{organization}.rokka.io` |
 
-**Returns:** `string` - The transformed URL, or the original URL if parsing fails
+**Returns:** `string` - The transformed rokka render URL, or the original URL if parsing fails
 
 **Examples:**
 
 ```js
 // Change to a different stack
-getUrlFromUrl('https://myorg.rokka.io/dynamic/abc123.png', 'thumbnail')
+getUrlFromUrl(
+  'https://myorg.rokka.io/dynamic/abc123.png',
+  'thumbnail'
+)
 // => 'https://myorg.rokka.io/thumbnail/abc123.png'
+```
 
+```js
 // Change format and add filename
 getUrlFromUrl(
   'https://myorg.rokka.io/gallery/abc123.png',
@@ -111,14 +123,16 @@ getUrlFromUrl(
   { format: 'webp', filename: 'photo' }
 )
 // => 'https://myorg.rokka.io/large/abc123/photo.webp'
+```
 
-// Preserve existing variables when adding new ones
+```js
+// Use dynamic operations and preserve existing variables
 getUrlFromUrl(
   'https://myorg.rokka.io/stack/v-color-red/abc123.jpg',
-  'newstack',
+  [{ name: 'resize', options: { width: 400 } }],
   { clearVariables: false, variables: { size: 'medium' } }
 )
-// Both 'color' and 'size' variables are preserved
+// Variables 'color' and 'size' are both preserved in the output
 ```
 
 ---
@@ -127,40 +141,41 @@ getUrlFromUrl(
 
 Add or update stack variables in a rokka render URL.
 
-Variables are merged with any existing variables. The placement depends on the value:
+Variables are merged with any existing variables in the URL. The placement of variables depends on their content: - Short values (<=20 chars) without special characters go in the URL path as `v-name-value` - Longer values or those with special characters go in the `?v={...}` query parameter
 
-- Short values (<=20 chars) without special characters → URL path as `v-name-value`
-- Longer values or those with special characters → `?v={...}` query parameter
-
-Special characters that trigger query parameter: `* $ / \ - # % & ? ; :` and space
+Special characters that trigger query parameter placement: `* $ / \ - # % & ? ; : ` (space)
 
 **Parameters:**
 
-| Name                     | Type        | Description                                                       |
-| ------------------------ | ----------- | ----------------------------------------------------------------- |
-| `url`                    | `string`    | A rokka render URL                                                |
-| `variables`              | `Variables` | Variables to add or update                                        |
-| `removeSafeUrlFromQuery` | `boolean`   | Decode URL-safe chars for readable query params. Default: `false` |
+| Name                     | Type        | Description                                                                        |
+| ------------------------ | ----------- | ---------------------------------------------------------------------------------- |
+| `url`                    | `string`    | A rokka render URL                                                                 |
+| `variables`              | `Variables` | Variables to add or update                                                         |
+| `removeSafeUrlFromQuery` | `boolean`   | If true, decode URL-safe characters for more readable query params. Default: false |
 
-**Returns:** `string` - The URL with variables, or original URL if parsing fails
+**Returns:** `string` - The URL with variables added/updated, or the original URL if parsing fails
 
 **Examples:**
 
 ```js
-// Simple variables go in URL path
+// Add simple variables (goes in URL path)
 addStackVariables(
   'https://myorg.rokka.io/stack/abc123.jpg',
   { color: 'red', size: 100 }
 )
 // => 'https://myorg.rokka.io/stack/v-color-red-size-100/abc123.jpg'
+```
 
+```js
 // Variables with special characters go in query param
 addStackVariables(
   'https://myorg.rokka.io/stack/abc123.jpg',
   { text: 'Hello World!' }
 )
 // => 'https://myorg.rokka.io/stack/abc123.jpg?v={"text":"Hello World!"}'
+```
 
+```js
 // Merge with existing variables
 addStackVariables(
   'https://myorg.rokka.io/stack/v-a-1/abc123.jpg',
@@ -173,27 +188,20 @@ addStackVariables(
 
 ## Types
 
-### Variables
-
-Key-value pairs for stack variables.
-
-```ts
-interface Variables {
-  [key: string]: string | number | boolean
-}
-```
-
 ### StackOperation
 
-Defines an image operation for dynamic stacks.
+Defines a single image operation for dynamic stacks.
 
 ```ts
 interface StackOperation {
-  name: string       // Operation name (e.g., 'resize', 'crop')
-  options?: {        // Operation parameters
+  // The operation name (e.g., 'resize', 'crop', 'blur')
+  name: string
+  // Key-value pairs for operation parameters
+  options?: {
     [key: string]: string | number | boolean | undefined | null
   }
-  expressions?: {    // Dynamic expressions using stack variables
+  // Key-value pairs for dynamic expressions using stack variables
+  expressions?: {
     [key: string]: string | number | boolean | undefined | null
   }
 }
@@ -202,15 +210,27 @@ interface StackOperation {
 **Example:**
 
 ```js
-const operations = [
-  { name: 'resize', options: { width: 300, height: 200 } },
-  { name: 'crop', options: { width: 100 }, expressions: { anchor_x: '$anchor' } }
-]
+// Resize operation
+const resize: StackOperation = {
+  name: 'resize',
+  options: { width: 300, height: 200 }
+}
+```
+
+```js
+// Crop with expressions
+const crop: StackOperation = {
+  name: 'crop',
+  options: { width: 100, height: 100 },
+  expressions: { anchor_x: '$anchor_x' }
+}
 ```
 
 ### StackOptions
 
 Stack-level options that modify rendering behavior.
+
+Common options include: - `af` (autoformat): Automatically select the best image format - `optim` (optimization): Image optimization settings
 
 ```ts
 interface StackOptions {
@@ -218,38 +238,76 @@ interface StackOptions {
 }
 ```
 
-Common options:
+**Example:**
 
-- `af` - Autoformat: automatically select the best image format
-- `optim` - Optimization level
+```js
+const options: StackOptions = {
+  af: 1,      // Enable autoformat
+  optim: 80   // Set optimization level
+}
+```
 
-### GetUrlOptions
+### Variables
 
-Options for `getUrl()`.
+Key-value pairs for stack variables used in dynamic image rendering.
+
+Variables are injected into the URL and can be referenced in stack operations using expressions (e.g., `$width`).
 
 ```ts
-interface GetUrlOptions {
-  filename?: string           // Set filename in URL (for SEO)
-  stackoptions?: StackOptions // Stack-level options
-  variables?: Variables       // Variables to add
-  removeSafeUrlFromQuery?: boolean // Decode query params. Default: false
+interface Variables {
+  [key: string]: string | number | boolean
+}
+```
+
+**Example:**
+
+```js
+const variables: Variables = {
+  width: 300,
+  quality: 'high',
+  grayscale: true
 }
 ```
 
 ### GetUrlFromUrlOptions
 
-Options for `getUrlFromUrl()`.
+Options for the `getUrlFromUrl` function.
 
 ```ts
 interface GetUrlFromUrlOptions {
-  filename?: string           // Override filename
-  format?: string             // Override output format
-  stackoptions?: StackOptions // Stack-level options
-  variables?: Variables       // Variables to add/merge
-  clearVariables?: boolean    // Remove existing variables. Default: true
-  removeSafeUrlFromQuery?: boolean // Decode query params. Default: false
+  // Stack-level options (e.g., autoformat). Adds `o-{options}` to the URL path.
+  stackoptions?: StackOptions
+  // Override or set the filename in the URL. Useful for SEO.
+  filename?: string
+  // Override the output format (e.g., 'webp', 'png', 'jpg').
+  format?: string
+  // Variables to add or merge into the URL.
+  variables?: Variables
+  // If true, use decoded characters in query params for more readable URLs. Default: false.
+  removeSafeUrlFromQuery?: boolean
+  // If true, remove existing variables from the URL before adding new ones. Default: true.
+  clearVariables?: boolean
 }
 ```
+
+### GetUrlOptions
+
+Options for the `getUrl` function.
+
+```ts
+interface GetUrlOptions {
+  // Set a filename in the URL. Useful for SEO and descriptive downloads.
+  filename?: string
+  // Stack-level options (e.g., autoformat). Adds `o-{options}` to the URL path.
+  stackoptions?: StackOptions
+  // Variables to add to the URL.
+  variables?: Variables
+  // If true, use decoded characters in query params for more readable URLs. Default: false.
+  removeSafeUrlFromQuery?: boolean
+}
+```
+
+<!-- ENDDOCS -->
 
 ## See Also
 

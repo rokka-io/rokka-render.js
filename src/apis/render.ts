@@ -3,7 +3,7 @@ import {
   stringifyOperations,
   stringifyStackOptions,
 } from '../utils'
-import { StackOptions } from './stacks'
+import { StackOperation, StackOptions } from './stacks'
 
 /**
  * Key-value pairs for stack variables used in dynamic image rendering.
@@ -207,7 +207,7 @@ export const getUrl = (
   organization: string,
   hash: string,
   format: string,
-  stack: string | object,
+  stack: string | StackOperation[],
   options?: GetUrlOptions,
   renderHost = 'https://{organization}.rokka.io',
 ) => {
@@ -279,7 +279,7 @@ export const getUrl = (
  */
 export const getUrlFromUrl = (
   rokkaUrl: string,
-  stack: string | object,
+  stack: string | StackOperation[],
   options: GetUrlFromUrlOptions = {},
   renderHost = 'https://{organization}.rokka.io',
 ): string => {
