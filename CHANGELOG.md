@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING**: Require Node.js >= 18 (dropped support for Node 10-16)
+- **BREAKING**: Require Node.js >= 22 (dropped support for Node 10-20)
 - Upgrade TypeScript target from ES5 to ES2020
 - Upgrade dev dependencies: TypeScript 6.0, Jest 30, Rollup 4, ts-jest 29, ESLint 10, typescript-eslint 8, Prettier 3
 - Replace `rollup-plugin-terser` with `@rollup/plugin-terser`

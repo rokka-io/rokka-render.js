@@ -11,7 +11,7 @@
     "/src/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "test": "npm run lint && npm run jest",
