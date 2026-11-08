@@ -1,6 +1,6 @@
 {
   "name": "rokka-render",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "JavaScript client library for just some render functions of rokka.io",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
