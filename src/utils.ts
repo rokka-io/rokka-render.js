@@ -10,15 +10,16 @@ export function stringifyOperations(
   return stackoperations
     .map(operation => {
       const name = operation.name
-      const options = Object.keys(operation.options || {})
-        .map(
-          k =>
-            `${k}-${
-              operation.options && operation.options[k]
-                ? operation.options[k]
-                : '__undefined__'
-            }`,
-        )
+      const operationOptions = operation.options || {}
+      const options = Object.keys(operationOptions)
+        .map(k => {
+          const value = operationOptions[k]
+          return `${k}-${
+            value === undefined || value === null || value === ''
+              ? '__undefined__'
+              : value
+          }`
+        })
         .join('-')
 
       if (!options) {

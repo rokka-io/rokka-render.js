@@ -14,6 +14,24 @@ describe('render', () => {
     )
   })
 
+  it('get URL with falsy operation options in a dynamic stack', async () => {
+    const url = getUrl(
+      'myorg',
+      'c421f4e8cefe0fd3aab22832f51e85bacda0a47a',
+      'png',
+      [
+        {
+          name: 'resize',
+          options: { width: 0, upscale: false, height: undefined, mode: null },
+        },
+      ],
+    )
+
+    expect(url).toBe(
+      'https://myorg.rokka.io/dynamic/resize-width-0-upscale-false-height-__undefined__-mode-__undefined__/c421f4e8cefe0fd3aab22832f51e85bacda0a47a.png',
+    )
+  })
+
   it('get URL from Url', async () => {
     const url = getUrlFromUrl(
       'https://myorg.rokka.io/dynamic/c421f4e8cefe0fd3aab22832f51e85bacda0a47a.png',

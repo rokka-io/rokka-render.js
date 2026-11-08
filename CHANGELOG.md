@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI now tests on Node 18, 20, 22
 - Use `StackOperation[]` type instead of `object` for stack parameters in `getUrl` and `getUrlFromUrl`
 
+### Fixed
+
+- Operation options with value `false` or `0` were rendered as `__undefined__` in dynamic stack URLs
+
 ## [0.10.2]
 
 - Add more special characters to match for query parameter placement
