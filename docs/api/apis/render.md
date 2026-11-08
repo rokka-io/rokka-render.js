@@ -59,7 +59,7 @@ const variables: Variables = {
 
 ## Type Aliases
 
-### AddStackVariablesType()
+### AddStackVariablesType
 
 ```ts
 type AddStackVariablesType = (url, variables, removeSafeUrlFromQuery?) => string;
@@ -79,7 +79,7 @@ type AddStackVariablesType = (url, variables, removeSafeUrlFromQuery?) => string
 
 ***
 
-### GetUrlComponentsType()
+### GetUrlComponentsType
 
 ```ts
 type GetUrlComponentsType = (urlObject) => UrlComponents | false;
@@ -114,13 +114,19 @@ Special characters that trigger query parameter placement: `* $ / \ - # % & ? ; 
 
 #### Param
 
+**url**
+
 A rokka render URL
 
 #### Param
 
+**variables**
+
 Variables to add or update
 
 #### Param
+
+**removeSafeUrlFromQuery**
 
 If true, decode URL-safe characters for more readable query params. Default: false
 
@@ -166,7 +172,8 @@ function getStackVariables(
    urlComponents, 
    urlObject, 
    stackComponents, 
-   variables): Variables;
+   variables
+): Variables;
 ```
 
 #### Parameters
@@ -193,7 +200,8 @@ function getUrl(
    format, 
    stack, 
    options?, 
-   renderHost?): string;
+   renderHost?
+): string;
 ```
 
 Generate a rokka render URL from individual components.
@@ -250,7 +258,8 @@ function getUrlFromUrl(
    rokkaUrl, 
    stack, 
    options?, 
-   renderHost?): string;
+   renderHost?
+): string;
 ```
 
 Transform an existing rokka render URL with a new stack and options.
@@ -264,8 +273,8 @@ then generates a new URL with the specified stack and options.
 | ------ | ------ | ------ | ------ |
 | `rokkaUrl` | `string` | `undefined` | An existing rokka render URL |
 | `stack` | `string` \| [`StackOperation`](stacks.md#stackoperation)[] | `undefined` | Stack name (string) or array of [StackOperation](stacks.md#stackoperation) objects |
-| `options` | [`GetUrlFromUrlOptions`](#geturlfromurloptions) | `{}` | Optional settings to modify the URL |
-| `renderHost` | `string` | `'https://{organization}.rokka.io'` | Custom render host. Default: `https://{organization}.rokka.io` |
+| `options?` | [`GetUrlFromUrlOptions`](#geturlfromurloptions) | `{}` | Optional settings to modify the URL |
+| `renderHost?` | `string` | `'https://{organization}.rokka.io'` | Custom render host. Default: `https://{organization}.rokka.io` |
 
 #### Returns
 

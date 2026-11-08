@@ -16,8 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING**: Require Node.js >= 18 (dropped support for Node 10-16)
 - Upgrade TypeScript target from ES5 to ES2020
-- Upgrade dev dependencies: TypeScript 5.9, Jest 29, Rollup 4, ts-jest 29
+- Upgrade dev dependencies: TypeScript 6.0, Jest 30, Rollup 4, ts-jest 29, ESLint 10, typescript-eslint 8, Prettier 3
 - Replace `rollup-plugin-terser` with `@rollup/plugin-terser`
+- Migrate ESLint config to flat config (`eslint.config.mjs`)
 - CI now tests on Node 22, 24, 26
 - Use `StackOperation[]` type instead of `object` for stack parameters in `getUrl` and `getUrlFromUrl`
 

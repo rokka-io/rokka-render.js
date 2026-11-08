@@ -35,3 +35,9 @@ Rollup produces three formats in `dist/`:
 ## Tests
 
 Tests live in `tests/apis/` mirroring the source structure. Jest with ts-jest. The `render.addStackVariables.test.ts` file uses parameterized `it.each()` test cases.
+
+## Tooling gotchas
+
+- **TypeScript is capped at 6.0.x**: ts-jest (`<7`), typedoc (`<=6.0`) and typescript-eslint (`<6.1`) don't support TS 7 yet.
+- **Two tsconfigs**: `tsconfig.json` is for the build (`rootDir: ./src`, `types: []` — TS 6 requires an explicit `rootDir` and no longer auto-loads `@types/*`). `tests/tsconfig.json` extends it with `rootDir: ..` and `types: ["jest"]`; `jest.config.js` points ts-jest at it.
+- **ESLint flat config** in `eslint.config.mjs` (ESLint 10 has no `.eslintrc` support). Only `typescript-eslint` recommended + prettier; `eslint:recommended` is deliberately not enabled.
